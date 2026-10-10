@@ -10,4 +10,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <!-- The local data file must never be published, or a deployment would overwrite the server's links. -->
+  <ItemGroup>
+    <Content Update="App_Data\**" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
 </Project>
