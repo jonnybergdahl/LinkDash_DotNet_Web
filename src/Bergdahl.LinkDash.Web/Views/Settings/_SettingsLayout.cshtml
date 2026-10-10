@@ -1,0 +1,28 @@
+@{
+    Layout = "_Layout";
+
+    // Each settings view sets ViewData["SettingsSection"] to the menu item it belongs to.
+    var section = ViewData["SettingsSection"] as string;
+    string? Current(string name) => name == section ? "page" : null;
+}
+
+<div class="settings-layout">
+    <nav class="settings-nav" aria-label="Settings">
+        <h2 class="settings-nav-title">Settings</h2>
+        <a class="settings-nav-item" asp-action="Index" aria-current="@Current("Groups")">
+            <span class="material-symbols-rounded" aria-hidden="true">folder</span>
+            Groups
+        </a>
+        <a class="settings-nav-item" asp-action="Links" aria-current="@Current("Links")">
+            <span class="material-symbols-rounded" aria-hidden="true">link</span>
+            Links
+        </a>
+    </nav>
+    <div class="settings-main">
+        @RenderBody()
+    </div>
+</div>
+
+@section Scripts {
+    @await RenderSectionAsync("Scripts", required: false)
+}

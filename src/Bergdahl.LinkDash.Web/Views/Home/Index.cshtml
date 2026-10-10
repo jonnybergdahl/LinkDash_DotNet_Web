@@ -1,0 +1,58 @@
+@model IReadOnlyList<LinkGroup>
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@if (Model.Count == 0)
+{
+    <section class="empty-state">
+        <img class="empty-state-logo" src="~/img/logo.png" alt="LinkDash" width="286" height="271" />
+        <h1>No links yet</h1>
+        <p>Create your first group and add some links to get started.</p>
+        <a class="button filled" asp-controller="Settings" asp-action="Index">
+            <span class="material-symbols-rounded">add</span>
+            Add links
+        </a>
+    </section>
+}
+else
+{
+    <div class="group-grid">
+        @foreach (var group in Model)
+        {
+            <section class="card group-card">
+                <h2 class="card-title group-title">
+                    @if (group.Icon is not null)
+                    {
+                        <span class="mdi @LinkValidation.IconCssClass(group.Icon)" aria-hidden="true"></span>
+                    }
+                    @group.Name
+                </h2>
+                @if (group.Links.Count == 0)
+                {
+                    <p class="muted">No links in this group.</p>
+                }
+                else
+                {
+                    <ul class="link-list">
+                        @foreach (var link in group.Links)
+                        {
+                            <li>
+                                <a class="link-item" href="@link.Url" target="_blank" rel="noopener noreferrer" title="@link.Url">
+                                    <span class="link-icon mdi @LinkValidation.IconCssClass(link.Icon)" aria-hidden="true"></span>
+                                    <span class="link-text">
+                                        <span class="link-title">@link.Title</span>
+                                        @if (!string.IsNullOrEmpty(link.Description))
+                                        {
+                                            <span class="link-description">@link.Description</span>
+                                        }
+                                    </span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+        }
+    </div>
+}

@@ -1,0 +1,97 @@
+@model LinksViewModel
+@{
+    ViewData["Title"] = "Links";
+    ViewData["SettingsSection"] = "Links";
+    var selected = Model.SelectedGroup;
+}
+
+<div class="settings-header">
+    <h1>Links</h1>
+    @if (selected is not null)
+    {
+        <a class="button filled" asp-action="AddLink" asp-route-groupId="@selected.Id">
+            <span class="material-symbols-rounded">add</span>
+            Add link
+        </a>
+    }
+</div>
+
+@if (selected is null)
+{
+    <section class="card table-card">
+        <p class="muted table-empty">There are no groups yet. Add a <a asp-action="AddGroup">group</a> first.</p>
+    </section>
+}
+else
+{
+    <nav class="tabs" aria-label="Groups">
+        @foreach (var group in Model.Groups)
+        {
+            <a class="tab" asp-action="Links" asp-route-groupId="@group.Id" aria-current="@(group.Id == selected.Id ? "page" : null)">
+                @if (group.Icon is not null)
+                {
+                    <span class="mdi @LinkValidation.IconCssClass(group.Icon)" aria-hidden="true"></span>
+                }
+                @group.Name
+                <span class="tab-count" aria-label="@group.Links.Count links">@group.Links.Count</span>
+            </a>
+        }
+    </nav>
+
+    <section class="card table-card tab-panel">
+        @if (selected.Links.Count == 0)
+        {
+            <p class="muted table-empty">No links in this group.</p>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th class="col-icon"><span class="visually-hidden">Icon</span></th>
+                        <th>Title</th>
+                        <th class="col-actions"><span class="visually-hidden">Actions</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var l = 0; l < selected.Links.Count; l++)
+                    {
+                        var link = selected.Links[l];
+                        <tr id="link-@link.Id">
+                            <td class="col-icon">
+                                <span class="table-icon mdi @LinkValidation.IconCssClass(link.Icon)" aria-hidden="true"></span>
+                            </td>
+                            <td class="cell-title">
+                                @link.Title
+                                <a class="cell-subtitle cell-url" href="@link.Url" target="_blank" rel="noopener noreferrer" title="@link.Url">@link.Url</a>
+                            </td>
+                            <td class="col-actions">
+                                <div class="actions">
+                                    <form asp-action="MoveLink" asp-route-groupId="@selected.Id" asp-route-linkId="@link.Id" asp-route-direction="@MoveDirection.Up" method="post">
+                                        <button type="submit" class="icon-button" title="Move link up" aria-label="Move link up" disabled="@(l == 0)">
+                                            <span class="material-symbols-rounded">arrow_upward</span>
+                                        </button>
+                                    </form>
+                                    <form asp-action="MoveLink" asp-route-groupId="@selected.Id" asp-route-linkId="@link.Id" asp-route-direction="@MoveDirection.Down" method="post">
+                                        <button type="submit" class="icon-button" title="Move link down" aria-label="Move link down" disabled="@(l == selected.Links.Count - 1)">
+                                            <span class="material-symbols-rounded">arrow_downward</span>
+                                        </button>
+                                    </form>
+                                    <a class="icon-button" asp-action="EditLink" asp-route-groupId="@selected.Id" asp-route-linkId="@link.Id" title="Edit link" aria-label="Edit link">
+                                        <span class="material-symbols-rounded">edit</span>
+                                    </a>
+                                    <form asp-action="DeleteLink" asp-route-groupId="@selected.Id" asp-route-linkId="@link.Id" method="post"
+                                          data-confirm="Delete the link &quot;@link.Title&quot;?">
+                                        <button type="submit" class="icon-button danger" title="Delete link" aria-label="Delete link">
+                                            <span class="material-symbols-rounded">delete</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+}

@@ -58,3 +58,5 @@ nunit-*.xml
 
 #Jetbrains
 .idea/
+# LinkDash runtime data (default location of the JSON data file)
+**/App_Data/

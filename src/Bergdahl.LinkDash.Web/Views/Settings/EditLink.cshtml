@@ -1,0 +1,55 @@
+@model LinkFormModel
+@{
+    ViewData["Title"] = Model.IsNew ? "Add link" : "Edit link";
+    ViewData["SettingsSection"] = "Links";
+    var iconField = new IconFieldModel(nameof(Model.Icon), Model.Icon, EmptyHint: "Leave empty for the default link icon.");
+}
+
+<section class="card form-card">
+    <h1 class="card-title">@ViewData["Title"]</h1>
+    @if (!Model.IsNew)
+    {
+        <p class="muted">Group: @Model.GroupName</p>
+    }
+    <form asp-action="@(Model.IsNew ? "AddLink" : "EditLink")" method="post">
+        @if (Model.IsNew)
+        {
+            <div class="text-field">
+                <label asp-for="GroupId"></label>
+                <select asp-for="GroupId" asp-items="@(new SelectList(Model.Groups, nameof(LinkGroup.Id), nameof(LinkGroup.Name)))" required></select>
+                <span asp-validation-for="GroupId" class="field-error"></span>
+            </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="GroupId" />
+            <input type="hidden" asp-for="LinkId" />
+        }
+        <div asp-validation-summary="ModelOnly" class="field-error"></div>
+
+        <div class="text-field">
+            <label asp-for="Title"></label>
+            <input asp-for="Title" autocomplete="off" required autofocus />
+            <span asp-validation-for="Title" class="field-error"></span>
+        </div>
+
+        <div class="text-field">
+            <label asp-for="Url"></label>
+            <input asp-for="Url" type="url" autocomplete="off" required />
+            <span asp-validation-for="Url" class="field-error"></span>
+        </div>
+
+        <div class="text-field">
+            <label asp-for="Description">Description (optional)</label>
+            <input asp-for="Description" autocomplete="off" />
+            <span asp-validation-for="Description" class="field-error"></span>
+        </div>
+
+        <partial name="_IconField" model="iconField" />
+
+        <div class="form-actions">
+            <a class="button text" asp-action="Links" asp-route-groupId="@Model.GroupId">Cancel</a>
+            <button type="submit" class="button filled">@(Model.IsNew ? "Add" : "Save")</button>
+        </div>
+    </form>
+</section>

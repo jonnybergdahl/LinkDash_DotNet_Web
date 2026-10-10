@@ -1,0 +1,58 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"] as string;
+    var onSettings = string.Equals(controller, "Settings", StringComparison.OrdinalIgnoreCase);
+    var message = TempData[Bergdahl.LinkDash.Web.Controllers.SettingsController.MessageKey] as string;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] is string title ? $"{title} - LinkDash" : "LinkDash")</title>
+    <meta name="theme-color" content="#1565c0" />
+    <link rel="icon" href="~/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="~/img/icon-192.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="~/img/apple-touch-icon.png" />
+    <link rel="manifest" href="~/site.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@mdi/font@7.4.47/css/materialdesignicons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="top-app-bar">
+        <a class="brand" asp-controller="Home" asp-action="Index">
+            <img src="~/img/logo-icon.png" alt="" width="40" height="40" />
+            <span>LinkDash</span>
+        </a>
+        <nav class="top-app-bar-actions">
+            @if (onSettings)
+            {
+                <a class="icon-button" asp-controller="Home" asp-action="Index" title="Back to dashboard" aria-label="Back to dashboard">
+                    <span class="material-symbols-rounded">dashboard</span>
+                </a>
+            }
+            else
+            {
+                <a class="icon-button" asp-controller="Settings" asp-action="Index" title="Settings" aria-label="Settings">
+                    <span class="material-symbols-rounded">settings</span>
+                </a>
+            }
+        </nav>
+    </header>
+
+    <main class="content" role="main">
+        @RenderBody()
+    </main>
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="snackbar" role="status">@message</div>
+    }
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

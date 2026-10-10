@@ -1,0 +1,72 @@
+@model IReadOnlyList<LinkGroup>
+@{
+    ViewData["Title"] = "Groups";
+    ViewData["SettingsSection"] = "Groups";
+}
+
+<div class="settings-header">
+    <h1>Groups</h1>
+    <a class="button filled" asp-action="AddGroup">
+        <span class="material-symbols-rounded">add</span>
+        Add group
+    </a>
+</div>
+
+<section class="card table-card">
+    @if (Model.Count == 0)
+    {
+        <p class="muted table-empty">There are no groups yet.</p>
+    }
+    else
+    {
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th class="col-icon"><span class="visually-hidden">Icon</span></th>
+                    <th>Name</th>
+                    <th class="col-number">Links</th>
+                    <th class="col-actions"><span class="visually-hidden">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var g = 0; g < Model.Count; g++)
+                {
+                    var group = Model[g];
+                    <tr id="group-@group.Id">
+                        <td class="col-icon">
+                            @if (group.Icon is not null)
+                            {
+                                <span class="table-icon mdi @LinkValidation.IconCssClass(group.Icon)" aria-hidden="true"></span>
+                            }
+                        </td>
+                        <td class="cell-title">@group.Name</td>
+                        <td class="col-number">@group.Links.Count</td>
+                        <td class="col-actions">
+                            <div class="actions">
+                                <form asp-action="MoveGroup" asp-route-id="@group.Id" asp-route-direction="@MoveDirection.Up" method="post">
+                                    <button type="submit" class="icon-button" title="Move group up" aria-label="Move group up" disabled="@(g == 0)">
+                                        <span class="material-symbols-rounded">arrow_upward</span>
+                                    </button>
+                                </form>
+                                <form asp-action="MoveGroup" asp-route-id="@group.Id" asp-route-direction="@MoveDirection.Down" method="post">
+                                    <button type="submit" class="icon-button" title="Move group down" aria-label="Move group down" disabled="@(g == Model.Count - 1)">
+                                        <span class="material-symbols-rounded">arrow_downward</span>
+                                    </button>
+                                </form>
+                                <a class="icon-button" asp-action="EditGroup" asp-route-id="@group.Id" title="Edit group" aria-label="Edit group">
+                                    <span class="material-symbols-rounded">edit</span>
+                                </a>
+                                <form asp-action="DeleteGroup" asp-route-id="@group.Id" method="post"
+                                      data-confirm="Delete the group &quot;@group.Name&quot; and its @group.Links.Count link(s)?">
+                                    <button type="submit" class="icon-button danger" title="Delete group" aria-label="Delete group">
+                                        <span class="material-symbols-rounded">delete</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>

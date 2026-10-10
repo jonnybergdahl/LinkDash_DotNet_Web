@@ -1,0 +1,23 @@
+@model IconFieldModel
+@{
+    var id = Html.GenerateIdFromName(Model.Name);
+    var invalid = ViewData.ModelState.TryGetValue(Model.Name, out var state) && state.Errors.Count > 0;
+}
+<div class="text-field">
+    <label for="@id">Icon (optional)</label>
+    <div class="icon-input">
+        <span class="link-icon mdi @LinkValidation.IconCssClass(Model.Value, Model.EmptyIcon)" id="@id-preview" aria-hidden="true"></span>
+        <div class="icon-picker" data-icon-picker data-icons-url="@Url.Content("~/lib/mdi/icons.json")">
+            <input id="@id" name="@Model.Name" value="@Model.Value" class="@(invalid ? "input-validation-error" : null)"
+                   autocomplete="off" spellcheck="false" maxlength="@LinkValidation.MaxIconLength"
+                   placeholder="Search icons, e.g. router, mail, github" pattern="(mdi:)?[a-z0-9]+(-[a-z0-9]+)*"
+                   data-icon-preview="@id-preview" data-empty-icon="@Model.EmptyIcon"
+                   role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="@id-options" />
+            <ul class="icon-options" id="@id-options" role="listbox" aria-label="Icons" hidden></ul>
+        </div>
+    </div>
+    <span class="field-hint">
+        A <a href="https://pictogrammers.com/library/mdi/" target="_blank" rel="noopener noreferrer">Material Design Icons</a> name, written like in Home Assistant. @Model.EmptyHint
+    </span>
+    @Html.ValidationMessage(Model.Name, new { @class = "field-error" })
+</div>

@@ -1,0 +1,27 @@
+@model GroupFormModel
+@{
+    ViewData["Title"] = Model.IsNew ? "Add group" : "Edit group";
+    ViewData["SettingsSection"] = "Groups";
+    var iconField = new IconFieldModel(nameof(Model.Icon), Model.Icon, LinkValidation.BlankIcon, "Leave empty for no icon.");
+}
+
+<section class="card form-card">
+    <h1 class="card-title">@ViewData["Title"]</h1>
+    <form asp-action="@(Model.IsNew ? "AddGroup" : "EditGroup")" method="post">
+        @if (!Model.IsNew)
+        {
+            <input type="hidden" asp-for="Id" />
+        }
+        <div asp-validation-summary="ModelOnly" class="field-error"></div>
+        <div class="text-field">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" placeholder="e.g. Work" autocomplete="off" required autofocus />
+            <span asp-validation-for="Name" class="field-error"></span>
+        </div>
+        <partial name="_IconField" model="iconField" />
+        <div class="form-actions">
+            <a class="button text" asp-action="Index">Cancel</a>
+            <button type="submit" class="button filled">@(Model.IsNew ? "Add" : "Save")</button>
+        </div>
+    </form>
+</section>

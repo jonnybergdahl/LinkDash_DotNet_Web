@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Bergdahl.LinkDash.Core/Bergdahl.LinkDash.Core.csproj" />
+    <Project Path="src/Bergdahl.LinkDash.Tests/Bergdahl.LinkDash.Tests.csproj" />
+    <Project Path="src/Bergdahl.LinkDash.Web/Bergdahl.LinkDash.Web.csproj" />
+  </Folder>
+</Solution>
