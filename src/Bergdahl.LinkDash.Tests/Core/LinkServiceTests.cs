@@ -66,6 +66,23 @@ public class LinkServiceTests
     }
 
     [Test]
+    public void AddGroup_RejectsFaviconIcon()
+    {
+        Assert.ThrowsAsync<ArgumentException>(() => _service.AddGroupAsync("Work", "favicon"));
+        Assert.That(_repository.SaveCount, Is.Zero);
+    }
+
+    [Test]
+    public async Task AddLink_AcceptsFaviconIcon()
+    {
+        var group = await _service.AddGroupAsync("Work");
+
+        var link = await _service.AddLinkAsync(group.Id, new LinkInput("Router", "http://192.168.1.1", Icon: " favicon "));
+
+        Assert.That(link!.Icon, Is.EqualTo("favicon"));
+    }
+
+    [Test]
     public async Task UpdateGroup_ChangesAndClearsIcon()
     {
         var group = await _service.AddGroupAsync("Work", "mdi:briefcase");

@@ -14,7 +14,8 @@ public class Link
     public string? Description { get; set; }
 
     /// <summary>
-    /// Optional Material Design Icons name in Home Assistant form, e.g. "mdi:home" or "mdi:email".
+    /// Optional Material Design Icons name in Home Assistant form, e.g. "mdi:home" or "mdi:email",
+    /// or "favicon" to show the site's own icon.
     /// </summary>
     public string? Icon { get; set; }
 }

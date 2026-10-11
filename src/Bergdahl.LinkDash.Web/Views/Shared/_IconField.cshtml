@@ -2,22 +2,34 @@
 @{
     var id = Html.GenerateIdFromName(Model.Name);
     var invalid = ViewData.ModelState.TryGetValue(Model.Name, out var state) && state.Errors.Count > 0;
+    var favicon = Model.AllowFavicon && LinkValidation.IsFavicon(Model.Value);
 }
 <div class="text-field">
     <label for="@id">Icon (optional)</label>
     <div class="icon-input">
-        <span class="link-icon mdi @LinkValidation.IconCssClass(Model.Value, Model.EmptyIcon)" id="@id-preview" aria-hidden="true"></span>
+        @if (favicon && Model.FaviconUrl is not null)
+        {
+            <span class="link-icon favicon" id="@id-preview" aria-hidden="true">
+                <img src="@Model.FaviconUrl" alt="" data-favicon />
+            </span>
+        }
+        else
+        {
+            @* A new link has no saved site to load the favicon from yet, so a globe stands in for it. *@
+            <span class="link-icon mdi @(favicon ? "mdi-web" : LinkValidation.IconCssClass(Model.Value, Model.EmptyIcon))" id="@id-preview" aria-hidden="true"></span>
+        }
         <div class="icon-picker" data-icon-picker data-icons-url="@Url.Content("~/lib/mdi/icons.json")">
             <input id="@id" name="@Model.Name" value="@Model.Value" class="@(invalid ? "input-validation-error" : null)"
                    autocomplete="off" spellcheck="false" maxlength="@LinkValidation.MaxIconLength"
                    placeholder="Search icons, e.g. router, mail, github" pattern="(mdi:)?[a-z0-9]+(-[a-z0-9]+)*"
                    data-icon-preview="@id-preview" data-empty-icon="@Model.EmptyIcon"
+                   data-allow-favicon="@(Model.AllowFavicon ? "true" : null)" data-favicon-url="@Model.FaviconUrl"
                    role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="@id-options" />
             <ul class="icon-options" id="@id-options" role="listbox" aria-label="Icons" hidden></ul>
         </div>
     </div>
     <span class="field-hint">
-        A <a href="https://pictogrammers.com/library/mdi/" target="_blank" rel="noopener noreferrer">Material Design Icons</a> name, written like in Home Assistant. @Model.EmptyHint
+        A <a href="https://pictogrammers.com/library/mdi/" target="_blank" rel="noopener noreferrer">Material Design Icons</a> name, written like in Home Assistant@(Model.AllowFavicon ? $", or \"{LinkValidation.FaviconIcon}\" to use the site's own icon" : null). @Model.EmptyHint
     </span>
     @Html.ValidationMessage(Model.Name, new { @class = "field-error" })
 </div>

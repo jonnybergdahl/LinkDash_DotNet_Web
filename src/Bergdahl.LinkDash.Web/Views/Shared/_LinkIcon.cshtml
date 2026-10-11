@@ -1,0 +1,14 @@
+@using Bergdahl.LinkDash.Web.Favicons
+@model LinkIconModel
+@if (LinkValidation.IsFavicon(Model.Link.Icon))
+{
+    @* site.js swaps in the default link icon if the favicon can't be loaded. *@
+    <span class="@Model.CssClass favicon" aria-hidden="true">
+        <img src="@Url.Action("Get", "Favicon", new { linkId = Model.Link.Id, v = FaviconService.CacheKey(Model.Link.Url) })"
+             alt="" loading="lazy" data-favicon />
+    </span>
+}
+else
+{
+    <span class="@Model.CssClass mdi @LinkValidation.IconCssClass(Model.Link.Icon)" aria-hidden="true"></span>
+}

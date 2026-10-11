@@ -1,9 +1,11 @@
+using System.Net;
 using System.Threading.RateLimiting;
 using Bergdahl.LinkDash.Core.Configuration;
 using Bergdahl.LinkDash.Core.Services;
 using Bergdahl.LinkDash.Core.Storage;
 using Bergdahl.LinkDash.Web.Authentication;
 using Bergdahl.LinkDash.Web.Controllers;
+using Bergdahl.LinkDash.Web.Favicons;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
@@ -37,6 +39,23 @@ builder.Services
 
 builder.Services.AddSingleton<ILinkRepository, JsonFileLinkRepository>();
 builder.Services.AddSingleton<ILinkService, LinkService>();
+
+builder.Services
+    .AddHttpClient(FaviconService.HttpClientName, client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(10);
+        // Some sites turn away requests without a browser-like user agent.
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; LinkDash)");
+        client.DefaultRequestHeaders.Accept.ParseAdd("text/html,image/*;q=0.9,*/*;q=0.8");
+    })
+    .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+    {
+        AutomaticDecompression = DecompressionMethods.All,
+        MaxAutomaticRedirections = 5,
+        // Self-hosted sites often use self-signed certificates. Only icons are downloaded, and they are checked to be images.
+        SslOptions = { RemoteCertificateValidationCallback = (_, _, _, _) => true }
+    });
+builder.Services.AddSingleton<FaviconService>();
 
 builder.Services.AddOptions<AdminOptions>().Bind(builder.Configuration.GetSection(AdminOptions.SectionName));
 builder.Services.AddSingleton<AdminAccountStore>();

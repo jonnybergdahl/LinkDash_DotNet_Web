@@ -39,6 +39,10 @@ Groups and links can both have an icon. Group icons are shown next to the group 
 Icons are optional [Material Design Icons](https://pictogrammers.com/library/mdi/) names, written the same way as in Home Assistant: `mdi:home`, `mdi:email` or `mdi:github`. The `mdi:` prefix is optional when typing.
 The icon field has a searchable dropdown, like the icon picker in Home Assistant, that matches icon names and aliases.
 
+Links can instead use the icon `favicon` (the first choice in the dropdown) to show the linked site's own icon.
+The server downloads it, looking for the page's `<link rel="icon">` first and `/favicon.ico` second, and caches it in a `favicons` folder next to the data file. Cached icons are refreshed after a week, and sites without a usable icon are retried after an hour; until then the link shows the default link icon.
+Because the server fetches the icon, it must be able to reach the linked sites. Certificate errors are ignored for these downloads, since self-hosted sites often use self-signed certificates, and only files that really are images are served.
+
 The dropdown's icon list lives in `src/Bergdahl.LinkDash.Web/wwwroot/lib/mdi/icons.json`. When you upgrade the MDI font version in `_Layout.cshtml`, regenerate the list with the same version:
 
 ```shell

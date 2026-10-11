@@ -198,7 +198,7 @@ public class LinkService(ILinkRepository repository) : ILinkService
             throw new ArgumentException($"Description can be at most {LinkValidation.MaxDescriptionLength} characters.");
         }
 
-        var icon = ValidateIcon(input.Icon);
+        var icon = ValidateIcon(input.Icon, allowFavicon: true);
 
         link.Title = title;
         link.Url = input.Url.Trim();
@@ -206,11 +206,13 @@ public class LinkService(ILinkRepository repository) : ILinkService
         link.Icon = icon;
     }
 
-    private static string? ValidateIcon(string? icon)
+    private static string? ValidateIcon(string? icon, bool allowFavicon = false)
     {
-        if (!LinkValidation.IsValidIcon(icon))
+        if (!LinkValidation.IsValidIcon(icon, allowFavicon))
         {
-            throw new ArgumentException("Icon must be a Material Design Icons name such as \"mdi:home\" (lower case letters, digits and dashes).");
+            throw new ArgumentException(allowFavicon
+                ? $"Icon must be a Material Design Icons name such as \"mdi:home\" (lower case letters, digits and dashes), or \"{LinkValidation.FaviconIcon}\"."
+                : "Icon must be a Material Design Icons name such as \"mdi:home\" (lower case letters, digits and dashes).");
         }
 
         return LinkValidation.NormalizeIcon(icon);

@@ -70,9 +70,9 @@ public class LinkFormModel : IValidatableObject
             yield return new ValidationResult("Enter a full http:// or https:// address.", [nameof(Url)]);
         }
 
-        if (!LinkValidation.IsValidIcon(Icon))
+        if (!LinkValidation.IsValidIcon(Icon, allowFavicon: true))
         {
-            yield return new ValidationResult("Use a Material Design Icons name such as \"mdi:home\" or \"mdi:email\".", [nameof(Icon)]);
+            yield return new ValidationResult($"Use a Material Design Icons name such as \"mdi:home\" or \"mdi:email\", or \"{LinkValidation.FaviconIcon}\".", [nameof(Icon)]);
         }
     }
 }

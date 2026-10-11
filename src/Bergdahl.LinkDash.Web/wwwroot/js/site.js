@@ -6,14 +6,56 @@ document.addEventListener("submit", event => {
     }
 });
 
+// Icon value that shows the link's own site icon, fetched and cached by the server (links only).
+const faviconIcon = "favicon";
+
+// Show an MDI glyph (e.g. "mdi:home") in a round icon container, replacing a favicon if it had one.
+const showGlyph = (container, icon) => {
+    container.querySelector("img[data-favicon]")?.remove();
+    container.classList.remove("favicon", ...[...container.classList].filter(c => c.startsWith("mdi-")));
+    container.classList.add("mdi", `mdi-${icon.replace(/^mdi:/, "")}`);
+};
+
+// Favicons the server could not find answer 404; show the default link icon instead of a broken image.
+// Listen in the capture phase since error events do not bubble, and catch images that failed before this script ran.
+document.addEventListener("error", event => {
+    if (event.target instanceof HTMLImageElement && event.target.matches("[data-favicon]")) {
+        showGlyph(event.target.parentElement, "mdi:link");
+    }
+}, true);
+document.querySelectorAll("img[data-favicon]").forEach(img => {
+    if (img.complete && img.naturalWidth === 0) {
+        showGlyph(img.parentElement, "mdi:link");
+    }
+});
+
 // Live preview of the Material Design Icons icon (e.g. "mdi:home") while typing in the link form.
 document.querySelectorAll("input[data-icon-preview]").forEach(input => {
     const preview = document.getElementById(input.dataset.iconPreview);
+    const { allowFavicon, faviconUrl, emptyIcon = "mdi:link" } = input.dataset;
+
+    // A new link has no saved site to load the favicon from yet, so a globe stands in for it.
+    const showFavicon = () => {
+        if (!faviconUrl) {
+            showGlyph(preview, "mdi:web");
+        } else if (!preview.querySelector("img[data-favicon]")) {
+            preview.classList.remove("mdi", ...[...preview.classList].filter(c => c.startsWith("mdi-")));
+            preview.classList.add("favicon");
+            const img = document.createElement("img");
+            img.src = faviconUrl;
+            img.alt = "";
+            img.dataset.favicon = "";
+            preview.append(img);
+        }
+    };
+
     const update = () => {
         const value = input.value.trim();
-        const icon = /^(mdi:)?[a-z0-9]+(-[a-z0-9]+)*$/.test(value) ? value : input.dataset.emptyIcon ?? "mdi:link";
-        const name = icon.replace(/^mdi:/, "");
-        preview.className = preview.className.replace(/\bmdi-\S+/, `mdi-${name}`);
+        if (allowFavicon && value === faviconIcon) {
+            showFavicon();
+        } else {
+            showGlyph(preview, /^(mdi:)?[a-z0-9]+(-[a-z0-9]+)*$/.test(value) ? value : emptyIcon);
+        }
     };
     input.addEventListener("input", update);
     input.addEventListener("change", update);
@@ -24,6 +66,7 @@ document.querySelectorAll("input[data-icon-preview]").forEach(input => {
 document.querySelectorAll("[data-icon-picker]").forEach(picker => {
     const input = picker.querySelector("input");
     const list = picker.querySelector("[role=listbox]");
+    const allowFavicon = input.dataset.allowFavicon !== undefined;
     const maxResults = 100;
     let icons = null;
     let loading = null;
@@ -78,18 +121,24 @@ document.querySelectorAll("[data-icon-picker]").forEach(picker => {
         setActive(-1);
     };
 
+    // In link forms the site's own icon is offered first, while the search is empty or could mean it.
+    const matchesFavicon = value => {
+        const query = value.trim().toLowerCase();
+        return allowFavicon && (!query || ["favicon", "site", "website"].some(word => word.startsWith(query)));
+    };
+
     const render = () => {
-        results = search(input.value);
-        list.replaceChildren(...results.map((name, i) => {
+        results = [...(matchesFavicon(input.value) ? [faviconIcon] : []), ...search(input.value).map(name => `mdi:${name}`)];
+        list.replaceChildren(...results.map((value, i) => {
             const option = document.createElement("li");
             option.id = `icon-option-${i}`;
             option.setAttribute("role", "option");
             option.setAttribute("aria-selected", "false");
             option.dataset.index = i;
             const glyph = document.createElement("span");
-            glyph.className = `mdi mdi-${name}`;
+            glyph.className = `mdi mdi-${value === faviconIcon ? "web" : value.replace(/^mdi:/, "")}`;
             glyph.setAttribute("aria-hidden", "true");
-            option.append(glyph, `mdi:${name}`);
+            option.append(glyph, value === faviconIcon ? `${faviconIcon} (the site's own icon)` : value);
             return option;
         }));
         if (results.length === 0) {
@@ -111,7 +160,7 @@ document.querySelectorAll("[data-icon-picker]").forEach(picker => {
     };
 
     const choose = index => {
-        input.value = `mdi:${results[index]}`;
+        input.value = results[index];
         input.dispatchEvent(new Event("change", { bubbles: true }));
         close();
     };

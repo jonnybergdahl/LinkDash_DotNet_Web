@@ -1,8 +1,10 @@
+@using Bergdahl.LinkDash.Web.Favicons
 @model LinkFormModel
 @{
     ViewData["Title"] = Model.IsNew ? "Add link" : "Edit link";
     ViewData["SettingsSection"] = "Links";
-    var iconField = new IconFieldModel(nameof(Model.Icon), Model.Icon, EmptyHint: "Leave empty for the default link icon.");
+    var iconField = new IconFieldModel(nameof(Model.Icon), Model.Icon, EmptyHint: "Leave empty for the default link icon.", AllowFavicon: true,
+        FaviconUrl: Model.IsNew ? null : Url.Action("Get", "Favicon", new { linkId = Model.LinkId, v = FaviconService.CacheKey(Model.Url) }));
 }
 
 <section class="card form-card">

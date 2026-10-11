@@ -59,7 +59,7 @@ else
                         var link = selected.Links[l];
                         <tr id="link-@link.Id">
                             <td class="col-icon">
-                                <span class="table-icon mdi @LinkValidation.IconCssClass(link.Icon)" aria-hidden="true"></span>
+                                <partial name="_LinkIcon" model='new LinkIconModel(link, "table-icon")' />
                             </td>
                             <td class="cell-title">
                                 @link.Title

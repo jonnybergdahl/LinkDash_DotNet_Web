@@ -39,7 +39,7 @@ else
                         {
                             <li>
                                 <a class="link-item" href="@link.Url" target="_blank" rel="noopener noreferrer" title="@link.Url">
-                                    <span class="link-icon mdi @LinkValidation.IconCssClass(link.Icon)" aria-hidden="true"></span>
+                                    <partial name="_LinkIcon" model='new LinkIconModel(link, "link-icon")' />
                                     <span class="link-text">
                                         <span class="link-title">@link.Title</span>
                                         @if (!string.IsNullOrEmpty(link.Description))

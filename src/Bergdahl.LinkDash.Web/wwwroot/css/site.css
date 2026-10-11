@@ -282,7 +282,7 @@ code {
     justify-content: center;
     width: 40px;
     height: 40px;
-    border-radius: var(--md-shape-full);
+    border-radius: var(--md-shape-small);
     background: var(--md-primary-container);
     color: var(--md-on-primary-container);
 }
@@ -290,6 +290,12 @@ code {
 .link-icon.mdi::before {
     font-size: 24px;
     line-height: 1;
+}
+
+.link-icon.favicon img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
 }
 
 .link-text {
@@ -466,7 +472,7 @@ code {
     justify-content: center;
     width: 36px;
     height: 36px;
-    border-radius: var(--md-shape-full);
+    border-radius: var(--md-shape-small);
     background: var(--md-primary-container);
     color: var(--md-on-primary-container);
 }
@@ -474,6 +480,12 @@ code {
 .table-icon.mdi::before {
     font-size: 20px;
     line-height: 1;
+}
+
+.table-icon.favicon img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
 }
 
 /* max-width: 0 lets the title column shrink so long URLs truncate instead of widening the table. */

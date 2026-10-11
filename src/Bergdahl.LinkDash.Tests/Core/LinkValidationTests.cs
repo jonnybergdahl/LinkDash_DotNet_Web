@@ -71,8 +71,24 @@ public class LinkValidationTests
     [TestCase("github", "mdi-github")]
     [TestCase(null, "mdi-link")]
     [TestCase("not valid", "mdi-link")]
+    [TestCase("favicon", "mdi-link")]
     public void IconCssClass_MapsToWebfontClass(string? icon, string expected)
     {
         Assert.That(LinkValidation.IconCssClass(icon), Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void IsValidIcon_AcceptsFaviconOnlyWhenAllowed()
+    {
+        Assert.That(LinkValidation.IsValidIcon("favicon", allowFavicon: true), Is.True);
+        Assert.That(LinkValidation.IsValidIcon(" favicon ", allowFavicon: true), Is.True);
+        Assert.That(LinkValidation.IsValidIcon("favicon"), Is.False);
+        Assert.That(LinkValidation.IsValidIcon("mdi:home", allowFavicon: true), Is.True);
+    }
+
+    [Test]
+    public void NormalizeIcon_KeepsFaviconWithoutPrefix()
+    {
+        Assert.That(LinkValidation.NormalizeIcon(" favicon "), Is.EqualTo("favicon"));
     }
 }
