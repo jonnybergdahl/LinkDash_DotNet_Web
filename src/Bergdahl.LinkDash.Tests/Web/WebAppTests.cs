@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Http.Json;
-using System.Text.RegularExpressions;
 using Bergdahl.LinkDash.Core.Models;
 using Bergdahl.LinkDash.Core.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -8,16 +7,21 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Bergdahl.LinkDash.Tests.Web;
 
-public partial class WebAppTests
+public class WebAppTests
 {
     private LinkDashWebApplicationFactory _factory = null!;
     private HttpClient _client = null!;
 
+    /// <summary>
+    /// Every test runs signed in; <see cref="AuthenticationTests"/> covers anonymous access.
+    /// </summary>
     [SetUp]
-    public void SetUp()
+    public async Task SetUp()
     {
         _factory = new LinkDashWebApplicationFactory();
         _client = _factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        var signIn = await _client.SignInAsync();
+        Assert.That(signIn.StatusCode, Is.EqualTo(HttpStatusCode.Redirect), "Sign-in failed");
     }
 
     [TearDown]
@@ -279,21 +283,6 @@ public partial class WebAppTests
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
     }
 
-    /// <summary>
-    /// Loads <paramref name="pageUrl"/> to obtain an antiforgery token and cookie, then posts the form.
-    /// </summary>
-    private async Task<HttpResponseMessage> PostFormAsync(string pageUrl, string postUrl, Dictionary<string, string> fields)
-    {
-        var page = await _client.GetAsync(pageUrl);
-        page.EnsureSuccessStatusCode();
-        var html = await page.Content.ReadAsStringAsync();
-        var token = AntiforgeryTokenRegex().Match(html).Groups[1].Value;
-
-        // The test client keeps the antiforgery cookie from the GET between requests.
-        return await _client.PostAsync(postUrl,
-            new FormUrlEncodedContent(fields.Append(new("__RequestVerificationToken", token))));
-    }
-
-    [GeneratedRegex("name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"")]
-    private static partial Regex AntiforgeryTokenRegex();
+    private Task<HttpResponseMessage> PostFormAsync(string pageUrl, string postUrl, Dictionary<string, string> fields) =>
+        _client.PostFormAsync(pageUrl, postUrl, fields);
 }

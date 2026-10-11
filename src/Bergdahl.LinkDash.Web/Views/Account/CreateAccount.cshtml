@@ -1,0 +1,36 @@
+@model CreateAccountFormModel
+@{
+    ViewData["Title"] = "Create account";
+}
+
+<section class="card login-card">
+    <h1 class="card-title">Create account</h1>
+    <p class="muted">Welcome to LinkDash! Create the administrator account that is used to change groups and links.</p>
+    <form asp-action="CreateAccount" method="post">
+        <input type="hidden" asp-for="ReturnUrl" />
+        <div asp-validation-summary="ModelOnly" class="field-error"></div>
+
+        <div class="text-field">
+            <label asp-for="Username"></label>
+            <input asp-for="Username" autocomplete="username" autocapitalize="none" spellcheck="false" required />
+            <span asp-validation-for="Username" class="field-error"></span>
+        </div>
+
+        <div class="text-field">
+            <label asp-for="Password"></label>
+            <input asp-for="Password" autocomplete="new-password" minlength="@Bergdahl.LinkDash.Web.Authentication.AdminCredentials.MinPasswordLength" required autofocus />
+            <span asp-validation-for="Password" class="field-error"></span>
+        </div>
+
+        <div class="text-field">
+            <label asp-for="ConfirmPassword"></label>
+            <input asp-for="ConfirmPassword" autocomplete="new-password" required />
+            <span asp-validation-for="ConfirmPassword" class="field-error"></span>
+        </div>
+
+        <div class="form-actions">
+            <a class="button text" asp-controller="Home" asp-action="Index">Cancel</a>
+            <button type="submit" class="button filled">Create account</button>
+        </div>
+    </form>
+</section>

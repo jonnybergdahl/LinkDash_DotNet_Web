@@ -61,6 +61,8 @@ html {
 body {
     margin: 0;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     font-family: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
     background: var(--md-surface);
     color: var(--md-on-surface);
@@ -98,6 +100,7 @@ code {
     height: 64px;
     padding: 0 16px;
     background: var(--md-surface-container);
+    border-bottom: 1px solid var(--md-outline-variant);
     box-shadow: var(--md-elevation-1);
 }
 
@@ -120,9 +123,44 @@ code {
 /* ---------- Layout ---------- */
 
 .content {
+    flex: 1;
+    width: 100%;
     max-width: 1280px;
     margin: 0 auto;
-    padding: 24px 16px 96px;
+    padding: 24px 16px 48px;
+}
+
+/* ---------- Footer ---------- */
+
+.app-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px 24px;
+    padding: 16px;
+    background: var(--md-surface-container);
+    border-top: 1px solid var(--md-outline-variant);
+    color: var(--md-on-surface-variant);
+    font-size: 0.875rem;
+}
+
+.app-footer a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.app-footer a:hover {
+    color: var(--md-primary);
+    text-decoration: underline;
+}
+
+.app-footer .mdi {
+    font-size: 18px;
+    line-height: 1;
 }
 
 .page-header {
@@ -205,6 +243,7 @@ code {
     flex: 0 1 360px;
     min-width: 0;
     margin: 0;
+    border: 1px solid var(--md-outline-variant);
     transition: box-shadow 0.2s;
 }
 
@@ -354,6 +393,11 @@ code {
 
 .form-card {
     max-width: 560px;
+}
+
+.login-card {
+    max-width: 400px;
+    margin: 48px auto 0;
 }
 
 .table-card {
@@ -672,6 +716,21 @@ code {
 
 .text-field input.input-validation-error {
     border-color: var(--md-error);
+}
+
+.checkbox-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    cursor: pointer;
+}
+
+.checkbox-field input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--md-primary);
 }
 
 .icon-input {

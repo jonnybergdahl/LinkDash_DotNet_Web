@@ -40,12 +40,28 @@
                     <span class="material-symbols-rounded">settings</span>
                 </a>
             }
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <button type="submit" class="icon-button" title="Sign out" aria-label="Sign out">
+                        <span class="material-symbols-rounded">logout</span>
+                    </button>
+                </form>
+            }
         </nav>
     </header>
 
     <main class="content" role="main">
         @RenderBody()
     </main>
+
+    <footer class="app-footer">
+        <span>Copyright&copy; @DateTime.Now.Year, Jonny Bergdahl</span>
+        <a href="https://github.com/jonnybergdahl/LinkDash_DotNet_Web" target="_blank" rel="noopener noreferrer">
+            <span class="mdi mdi-github" aria-hidden="true"></span>
+            GitHub
+        </a>
+    </footer>
 
     @if (!string.IsNullOrEmpty(message))
     {

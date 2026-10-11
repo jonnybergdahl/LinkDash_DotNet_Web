@@ -16,11 +16,14 @@ public static partial class LinkValidation
     /// <summary>
     /// Only absolute http(s) URLs are allowed, which also keeps "javascript:" links out.
     /// </summary>
-    public static bool IsValidUrl(string? url) =>
-        !string.IsNullOrWhiteSpace(url)
-        && url.Length <= MaxUrlLength
-        && Uri.TryCreate(url.Trim(), UriKind.Absolute, out var uri)
-        && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+    public static bool IsValidUrl(string? url)
+    {
+        var trimmed = url?.Trim();
+        return !string.IsNullOrEmpty(trimmed)
+            && trimmed.Length <= MaxUrlLength
+            && Uri.TryCreate(trimmed, UriKind.Absolute, out var uri)
+            && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+    }
 
     public const string IconPrefix = "mdi:";
     public const string DefaultIcon = "mdi:link";

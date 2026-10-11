@@ -1,0 +1,35 @@
+@model LoginFormModel
+@{
+    ViewData["Title"] = "Sign in";
+}
+
+<section class="card login-card">
+    <h1 class="card-title">Sign in</h1>
+    <p class="muted">Sign in to change groups and links.</p>
+    <form asp-action="Login" method="post">
+        <input type="hidden" asp-for="ReturnUrl" />
+        <div asp-validation-summary="ModelOnly" class="field-error"></div>
+
+        <div class="text-field">
+            <label asp-for="Username"></label>
+            <input asp-for="Username" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus />
+            <span asp-validation-for="Username" class="field-error"></span>
+        </div>
+
+        <div class="text-field">
+            <label asp-for="Password"></label>
+            <input asp-for="Password" autocomplete="current-password" required />
+            <span asp-validation-for="Password" class="field-error"></span>
+        </div>
+
+        <label class="checkbox-field">
+            <input asp-for="RememberMe" />
+            <span>@Html.DisplayNameFor(m => m.RememberMe)</span>
+        </label>
+
+        <div class="form-actions">
+            <a class="button text" asp-controller="Home" asp-action="Index">Cancel</a>
+            <button type="submit" class="button filled">Sign in</button>
+        </div>
+    </form>
+</section>

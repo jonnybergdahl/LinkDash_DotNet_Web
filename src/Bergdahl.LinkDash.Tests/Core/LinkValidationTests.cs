@@ -12,8 +12,18 @@ public class LinkValidationTests
         Assert.That(LinkValidation.IsValidUrl(url), Is.True);
     }
 
+    [Test]
+    public void IsValidUrl_IgnoresSurroundingWhitespaceForMaxLength()
+    {
+        var url = "https://example.com/" + new string('a', LinkValidation.MaxUrlLength - "https://example.com/".Length);
+
+        Assert.That(LinkValidation.IsValidUrl($"  {url}\t\n"), Is.True);
+        Assert.That(LinkValidation.IsValidUrl(url + "a"), Is.False);
+    }
+
     [TestCase(null)]
     [TestCase("")]
+    [TestCase("   ")]
     [TestCase("example.com")]
     [TestCase("/relative/path")]
     [TestCase("javascript:alert(1)")]

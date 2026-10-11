@@ -8,6 +8,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Lets developers keep the admin password hash in user secrets instead of appsettings. -->
+    <UserSecretsId>bergdahl-linkdash-web</UserSecretsId>
   </PropertyGroup>
 
   <!-- The local data file must never be published, or a deployment would overwrite the server's links. -->

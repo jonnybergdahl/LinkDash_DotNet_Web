@@ -1,14 +1,16 @@
 using Bergdahl.LinkDash.Core.Models;
 using Bergdahl.LinkDash.Core.Services;
 using Bergdahl.LinkDash.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bergdahl.LinkDash.Web.Controllers;
 
 /// <summary>
 /// The settings pages: a table of groups (<see cref="Index"/>) and a table of links (<see cref="Links"/>),
-/// each with add, edit, reorder and delete actions.
+/// each with add, edit, reorder and delete actions. Only the signed-in administrator can use them.
 /// </summary>
+[Authorize]
 public class SettingsController(ILinkService linkService) : Controller
 {
     /// <summary>

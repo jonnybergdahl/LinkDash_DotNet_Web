@@ -33,7 +33,14 @@ public class LinkFormModel : IValidatableObject
     [Required(ErrorMessage = "URL is required.")]
     [StringLength(LinkValidation.MaxUrlLength)]
     [Display(Name = "URL")]
-    public string Url { get; set; } = "https://";
+    public string Url
+    {
+        get => _url;
+        // Trimmed on binding so length validation and the redisplayed form ignore surrounding whitespace.
+        set => _url = value?.Trim() ?? string.Empty;
+    }
+
+    private string _url = "https://";
 
     [StringLength(LinkValidation.MaxDescriptionLength)]
     public string? Description { get; set; }

@@ -45,7 +45,52 @@ The dropdown's icon list lives in `src/Bergdahl.LinkDash.Web/wwwroot/lib/mdi/ico
 node tools/generate-mdi-icons.mjs 7.4.47
 ```
 
-> The settings page has no authentication. Only expose the app on networks you trust.
+## Signing in
+
+The dashboard is public, but the settings pages require signing in as the administrator. There is a single administrator account.
+
+The first time anyone opens the settings pages, LinkDash asks them to create that account: a user name (default `admin`, not case sensitive) and a password of at least 6 characters.
+The account is saved in `admin.json` next to the data file. The password is never stored, only a salted PBKDF2 hash (the same format ASP.NET Core Identity uses).
+
+> Whoever opens the settings pages first becomes the administrator, so create the account right after installing, before the app is reachable by others.
+
+To reset a forgotten password, delete `admin.json`; the next visit to the settings pages asks for a new account.
+
+### Setting the account in configuration (optional)
+
+Instead of creating the account in the browser, you can configure it in the `LinkDash:Admin` section, for example for automated deployments.
+A configured password hash takes precedence over `admin.json`:
+
+```json
+"LinkDash": {
+  "Admin": {
+    "Username": "admin",
+    "PasswordHash": "<hash from the hash-password command>"
+  }
+}
+```
+
+Create the hash with the app's `hash-password` command, which asks for the password twice and prints the hash:
+
+```shell
+dotnet run --project src/Bergdahl.LinkDash.Web -- hash-password
+```
+
+On a server, run the published app instead: `dotnet Bergdahl.LinkDash.Web.dll hash-password`.
+You can also use the environment variables `LinkDash__Admin__Username` and `LinkDash__Admin__PasswordHash`, or user secrets during development:
+
+```shell
+dotnet user-secrets --project src/Bergdahl.LinkDash.Web set "LinkDash:Admin:PasswordHash" "<hash>"
+```
+
+### Sessions
+
+- Changing the user name or password, or deleting `admin.json`, signs out everyone who is signed in. Configuration changes take effect without a restart.
+- Sessions last 14 days and are renewed while in use. Without *Keep me signed in*, the session ends when the browser is closed.
+- An IP address gets at most 10 sign-in attempts per minute.
+- The keys that protect the sign-in cookie are stored in a `keys` folder next to the data file (encrypted with DPAPI on Windows), so restarts don't sign anyone out.
+
+Serve the app over HTTPS when it is reachable from other machines, so the password and the sign-in cookie aren't sent in clear text.
 
 ## Deploying to IIS
 
@@ -124,19 +169,12 @@ IIS locks the app's files while it runs. To update:
 
 Don't delete `App_Data` or your `appsettings.Production.json` when you copy.
 
-### Protecting the settings pages (optional)
+### Creating the administrator account
 
-The app has no login of its own. On a domain network you can let IIS require a Windows login:
+Right after the first deployment, open `http://<server>:8080/Settings` and create the administrator account (see [Signing in](#signing-in)).
+It is saved in `App_Data\admin.json`, and the cookie keys in `App_Data\keys`; both use the write access from step 4. Don't delete them when you update.
 
-1. Enable the IIS feature *Windows Authentication* (under *World Wide Web Services* → *Security*).
-2. To protect only the settings pages and leave the dashboard open:
-
-   ```powershell
-   & "$env:windir\system32\inetsrv\appcmd.exe" set config "LinkDash/Settings" -section:system.webServer/security/authentication/anonymousAuthentication /enabled:false /commit:apphost
-   & "$env:windir\system32\inetsrv\appcmd.exe" set config "LinkDash/Settings" -section:system.webServer/security/authentication/windowsAuthentication /enabled:true /commit:apphost
-   ```
-
-   To protect the whole site, use `"LinkDash"` instead of `"LinkDash/Settings"`, or switch *Anonymous Authentication* off and *Windows Authentication* on for the site in IIS Manager → *Authentication*.
+To set the account through configuration instead, run `dotnet Bergdahl.LinkDash.Web.dll hash-password` in `C:\inetpub\LinkDash` and put the hash in `LinkDash:Admin:PasswordHash` in your `appsettings.Production.json`.
 
 ### Troubleshooting
 
