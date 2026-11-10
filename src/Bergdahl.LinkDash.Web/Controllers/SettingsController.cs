@@ -23,7 +23,7 @@ public class SettingsController(ILinkService linkService) : Controller
         return View(await linkService.GetGroupsAsync(cancellationToken));
     }
 
-    /// <param name="groupId">The group tab to show; defaults to the first group.</param>
+    /// <param name="groupId">The group to show; defaults to the first group.</param>
     public async Task<IActionResult> Links(Guid? groupId, CancellationToken cancellationToken)
     {
         var groups = await linkService.GetGroupsAsync(cancellationToken);

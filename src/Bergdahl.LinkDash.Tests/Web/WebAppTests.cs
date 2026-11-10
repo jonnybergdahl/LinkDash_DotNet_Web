@@ -89,7 +89,7 @@ public class WebAppTests
     }
 
     [Test]
-    public async Task SettingsLinks_ShowsTabPerGroupAndFirstGroupsLinks()
+    public async Task SettingsLinks_ShowsGroupDropdownAndFirstGroupsLinks()
     {
         var work = await Service.AddGroupAsync("Work");
         var home = await Service.AddGroupAsync("Home");
@@ -98,8 +98,8 @@ public class WebAppTests
 
         var html = await _client.GetStringAsync("/Settings/Links");
 
-        Assert.That(html, Does.Contain($"aria-current=\"page\" href=\"/Settings/Links?groupId={work.Id}\""));
-        Assert.That(html, Does.Contain($"href=\"/Settings/Links?groupId={home.Id}\""));
+        Assert.That(html, Does.Contain($"<option value=\"{work.Id}\" selected=\"selected\">Work (1)</option>"));
+        Assert.That(html, Does.Contain($"<option value=\"{home.Id}\">Home (1)</option>"));
         Assert.That(html, Does.Contain($"id=\"link-{link!.Id}\""));
         Assert.That(html, Does.Contain("Mail &lt;inbox&gt;"));
         Assert.That(html, Does.Contain("href=\"https://mail.example.com\""));
@@ -117,7 +117,7 @@ public class WebAppTests
 
         var html = await _client.GetStringAsync($"/Settings/Links?groupId={home.Id}");
 
-        Assert.That(html, Does.Contain($"aria-current=\"page\" href=\"/Settings/Links?groupId={home.Id}\""));
+        Assert.That(html, Does.Contain($"<option value=\"{home.Id}\" selected=\"selected\">"));
         Assert.That(html, Does.Contain($"id=\"link-{link!.Id}\""));
     }
 

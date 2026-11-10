@@ -24,21 +24,23 @@
 }
 else
 {
-    <nav class="tabs" aria-label="Groups">
-        @foreach (var group in Model.Groups)
-        {
-            <a class="tab" asp-action="Links" asp-route-groupId="@group.Id" aria-current="@(group.Id == selected.Id ? "page" : null)">
-                @if (group.Icon is not null)
+    <form class="group-picker" asp-action="Links" method="get">
+        <label for="group-select">Group</label>
+        <div class="group-picker-field">
+            <span class="group-picker-icon mdi @LinkValidation.IconCssClass(selected.Icon, "mdi:folder")" aria-hidden="true"></span>
+            <select id="group-select" name="groupId" data-auto-submit>
+                @foreach (var group in Model.Groups)
                 {
-                    <span class="mdi @LinkValidation.IconCssClass(group.Icon)" aria-hidden="true"></span>
+                    <option value="@group.Id" selected="@(group.Id == selected.Id)">@group.Name (@group.Links.Count)</option>
                 }
-                @group.Name
-                <span class="tab-count" aria-label="@group.Links.Count links">@group.Links.Count</span>
-            </a>
-        }
-    </nav>
+            </select>
+        </div>
+        <noscript>
+            <button type="submit" class="button tonal">Show</button>
+        </noscript>
+    </form>
 
-    <section class="card table-card tab-panel">
+    <section class="card table-card">
         @if (selected.Links.Count == 0)
         {
             <p class="muted table-empty">No links in this group.</p>

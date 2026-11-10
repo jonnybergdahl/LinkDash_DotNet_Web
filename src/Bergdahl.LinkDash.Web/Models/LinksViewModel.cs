@@ -3,7 +3,7 @@ using Bergdahl.LinkDash.Core.Models;
 namespace Bergdahl.LinkDash.Web.Models;
 
 /// <summary>
-/// The links settings page: one tab per group, showing the links of the selected group.
+/// The links settings page: a dropdown of the groups, showing the links of the selected group.
 /// </summary>
 public class LinksViewModel
 {

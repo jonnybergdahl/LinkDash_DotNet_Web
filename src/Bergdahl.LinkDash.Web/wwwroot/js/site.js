@@ -6,6 +6,28 @@ document.addEventListener("submit", event => {
     }
 });
 
+// Submit the form as soon as a dropdown marked with data-auto-submit changes (group picker on the links page).
+document.addEventListener("change", event => {
+    if (event.target.matches("select[data-auto-submit]")) {
+        event.target.form.requestSubmit();
+    }
+});
+
+// Masonry layout for the dashboard: each group card spans as many 1px grid rows as it is tall, plus the gap.
+// A ResizeObserver keeps the spans right when the window is resized or icons finish loading.
+document.querySelectorAll(".group-grid").forEach(grid => {
+    const gap = parseFloat(getComputedStyle(grid).rowGap) || 16;
+    grid.classList.add("masonry");
+    const fit = card => {
+        card.style.gridRowEnd = `span ${Math.ceil(card.getBoundingClientRect().height + gap)}`;
+    };
+    const observer = new ResizeObserver(entries => entries.forEach(entry => fit(entry.target)));
+    [...grid.children].forEach(card => {
+        fit(card);
+        observer.observe(card);
+    });
+});
+
 // Icon value that shows the link's own site icon, fetched and cached by the server (links only).
 const faviconIcon = "favicon";
 
